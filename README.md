@@ -1,2 +1,0 @@
-# thejayproject.fun
-My Website!
