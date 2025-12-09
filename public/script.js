@@ -1,42 +1,41 @@
+// Demo user
+const USERS = { test: "1234", admin: "admin" };
+
 // LOGIN
-async function login() {
-    let username = document.getElementById("username").value;
-    let password = document.getElementById("password").value;
+function login() {
+    const username = document.getElementById("username").value;
+    const password = document.getElementById("password").value;
 
-    const res = await fetch("/api/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password })
-    });
-
-    const data = await res.json();
-    document.getElementById("status").innerText = data.message;
-    if (data.success) window.location.href = "blog.html";
+    if (USERS[username] && USERS[username] === password) {
+        localStorage.setItem("loggedInUser", username);
+        window.location.href = "blog.html";
+    } else {
+        document.getElementById("status").innerText = "Invalid username or password";
+    }
 }
 
 // POST MESSAGE
-async function postMessage() {
-    let content = document.getElementById("content").value;
+function postMessage() {
+    const content = document.getElementById("content").value;
+    const username = localStorage.getItem("loggedInUser");
+    if (!username) return alert("Not logged in");
 
-    const res = await fetch("/api/post", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ content })
-    });
+    let posts = JSON.parse(localStorage.getItem("posts") || "[]");
 
-    const data = await res.json();
-    if (data.success) loadPosts();
+    const date = new Date().toLocaleString();
+    posts.unshift({ username, content, date });
+    localStorage.setItem("posts", JSON.stringify(posts));
+    document.getElementById("content").value = "";
+    loadPosts();
 }
 
 // LOAD POSTS
-async function loadPosts() {
-    const res = await fetch("/api/posts");
-    const data = await res.json();
-
+function loadPosts() {
+    const posts = JSON.parse(localStorage.getItem("posts") || "[]");
     const container = document.getElementById("posts");
     if (!container) return;
 
-    container.innerHTML = data
+    container.innerHTML = posts
         .map(p => `<div class='post'><b>${p.username}</b> (${p.date})<br>${p.content}</div>`)
         .join("");
 }
