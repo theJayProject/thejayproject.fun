@@ -15,6 +15,7 @@ const USERS = {
     "admin": "admin"
 };
 
+// In-memory posts
 let posts = [];
 
 // LOGIN
@@ -49,4 +50,10 @@ app.post("/api/post", (req, res) => {
     res.json({ success: true });
 });
 
-app.listen(3000, () => console.log("Backend running http://localhost:3000"));
+// Serve login page by default
+app.get("/", (req, res) => {
+    res.sendFile(path.join(__dirname, "public/login.html"));
+});
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`Backend running on http://localhost:${PORT}`));
