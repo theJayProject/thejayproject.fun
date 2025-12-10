@@ -1,7 +1,7 @@
 /* GENERAL STYLES */
 body {
     font-family: 'Arial', sans-serif;
-    background-color: #fef6f0; /* soft pastel peach */
+    background-color: #eef6fc; /* soft pastel blue */
     color: #333;
     margin: 0;
     padding: 0;
@@ -13,7 +13,7 @@ h1 {
     background-color: #cde4f7; /* pastel blue header */
     color: #333;
     margin: 0 0 30px 0;
-    border-bottom: 2px solid #d0e8f2;
+    border-bottom: 2px solid #b0d4f1;
 }
 
 /* LOGIN CONTAINER */
@@ -21,7 +21,7 @@ h1 {
     max-width: 400px;
     margin: 50px auto;
     padding: 30px;
-    background-color: #fff9f9;
+    background-color: #f0f8ff; /* light blue container */
     border-radius: 15px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
@@ -32,7 +32,7 @@ input, textarea {
     display: block;
     margin: 10px auto;
     padding: 10px;
-    border: 2px solid #cde4f7;
+    border: 2px solid #b0d4f1; /* soft blue border */
     border-radius: 8px;
     background-color: #ffffff;
     font-size: 16px;
@@ -40,8 +40,8 @@ input, textarea {
 
 input:focus, textarea:focus {
     outline: none;
-    border-color: #f7d6e0; /* pastel pink */
-    box-shadow: 0 0 5px #f7d6e0;
+    border-color: #91c4f2; /* slightly darker blue */
+    box-shadow: 0 0 5px #91c4f2;
 }
 
 button {
@@ -51,21 +51,21 @@ button {
     font-size: 16px;
     border: none;
     border-radius: 8px;
-    background-color: #f7d6e0; /* pastel pink button */
+    background-color: #91c4f2; /* soft blue button */
     color: #333;
     cursor: pointer;
     transition: all 0.2s ease;
 }
 
 button:hover {
-    background-color: #fcd8e3; /* slightly lighter pink */
+    background-color: #a3d0f7; /* lighter blue on hover */
 }
 
 /* STATUS MESSAGE */
 #status {
     text-align: center;
     font-weight: bold;
-    color: #d9534f;
+    color: #1a73e8; /* blue status message */
     margin-top: 10px;
 }
 
@@ -77,7 +77,7 @@ button:hover {
 }
 
 .post {
-    background-color: #e7f5f1; /* pastel green */
+    background-color: #dceefc; /* pastel blue post */
     border-radius: 10px;
     padding: 15px;
     margin-bottom: 20px;
@@ -85,7 +85,7 @@ button:hover {
 }
 
 .post b {
-    color: #4b6584;
+    color: #2a4d69; /* darker blue for bold text */
 }
 
 .post img {
@@ -100,10 +100,15 @@ button:hover {
     border-radius: 6px;
 }
 
-
 .toolbar button {
     width: 50px;
     height: 35px;
     font-size: 16px;
     margin: 0 5px;
+    background-color: #91c4f2; /* toolbar blue buttons */
+    color: #fff;
+}
+
+.toolbar button:hover {
+    background-color: #a3d0f7; /* hover effect for toolbar buttons */
 }
