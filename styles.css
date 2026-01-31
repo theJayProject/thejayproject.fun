@@ -1,19 +1,23 @@
 /* GENERAL STYLES */
+ @import url("https://fonts.googleapis.com/css2?family=Comfortaa:wght@300..700&family=Grandstander:ital,wght@0,100..900;1,100..900&family=Slackey&display=swap");
+
 body {
     font-family: 'Arial', sans-serif;
-    background-color: #eef6fc; /* soft pastel blue */
-    color: #333;
+    background-color: #c6dcff;
+    color: #9dbfff;
     margin: 0;
     padding: 0;
-}
+    font-size: 50px;
+    font: bold;
+    font-family: Grandstander, bold;
+    }
 
 h1 {
     text-align: center;
-    padding: 20px 0;
-    background-color: #cde4f7; /* pastel blue header */
-    color: #333;
+    padding: 10px 0;
+    background-color: #659df2;
+    color: #3e6dbe; 
     margin: 0 0 30px 0;
-    border-bottom: 2px solid #b0d4f1;
 }
 
 /* LOGIN CONTAINER */
