@@ -14,9 +14,8 @@ body {
 
 h1 {
     text-align: center;
-    color: #3e6dbe;
+    color: #9dbfff;
     margin: 0;
-
     padding: 0;
     background-color: transparent;
     width: auto;
@@ -29,16 +28,41 @@ h1 {
     background-color: #659df2;
 }
 
-.top-bar h1 {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-
-    margin: 0;
-    color: #3e6dbe;
-    white-space: nowrap;
+.top-bar {
+    position: relative;
+    z-index: 10;       /* ensures it stays above main content */
+    height: 100px;
+    background-color: #659df2;
 }
+
+
+/* MAIN*/
+.main-content {
+    display: flex;
+    width: 100%;
+    height: calc(100vh - 70px); /* full viewport height minus the top bar */
+}
+
+.section {
+    padding: 20px;
+}
+
+/* Set flex ratios */
+.left {
+    flex: 2;
+    background-image: url('assets/Bookshelf.png');
+}
+
+.center {
+    flex: 5;
+    background-color: #c6dcff; /* slightly different light blue */
+}
+
+.right {
+    flex: 2;
+    background-image: url('assets/Bookshelf.png'); 
+}
+
 
 .login-link {
     position: absolute;
