@@ -12,12 +12,20 @@ body {
 	overflow-x :hidden;
 }
 
+.white {
+	color: rgb(224, 224, 224);
+}
+
 .blue {
-	color: rgb(48,91,171);
+	color: rgb(183, 208, 255);
 }
 
 .green {
-	color: rgb(157,191,255);
+	color: rgb(68, 255, 114);
+}
+
+.red {
+	color: rgb(255, 68, 68);
 }
 
 a {
@@ -177,7 +185,7 @@ a:hover {
 }
 
 .first-section h4 {
-	margin-top: 380px;
+	margin-top: 130px;
 	text-align: center;
 	margin-right: 100px;
 	font-family: 'Open Sans';
