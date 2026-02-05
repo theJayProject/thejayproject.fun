@@ -128,6 +128,7 @@ html input[type="button"],
 input[type="reset"],
 input[type="submit"] {
   -webkit-appearance: button;
+  appearance: none;
   cursor: pointer;
 }
 button[disabled],
@@ -156,6 +157,7 @@ input[type="search"] {
      -moz-box-sizing: content-box;
           box-sizing: content-box;
   -webkit-appearance: textfield;
+  appearance: none;
 }
 input[type="search"]::-webkit-search-cancel-button,
 input[type="search"]::-webkit-search-decoration {
@@ -1733,6 +1735,7 @@ textarea.form-control {
 }
 input[type="search"] {
   -webkit-appearance: none;
+  appearance: none;
 }
 input[type="date"] {
   line-height: 34px;
@@ -5076,6 +5079,7 @@ a.list-group-item-danger.active:focus {
 }
 button.close {
   -webkit-appearance: none;
+  appearance: none;
   padding: 0;
   cursor: pointer;
   background: transparent;
@@ -5121,7 +5125,7 @@ button.close {
   background-color: #fff;
   background-clip: padding-box;
   border: 1px solid #999;
-  border: 1px solid rgba(0, 0, 0, .2);
+  border: 1px solid rgba(51, 204, 255, 0.35);
   border-radius: 6px;
   outline: none;
   -webkit-box-shadow: 0 3px 9px rgba(0, 0, 0, .5);
@@ -5134,7 +5138,7 @@ button.close {
   bottom: 0;
   left: 0;
   z-index: 1040;
-  background-color: #000;
+  background-color: #003344;
 }
 .modal-backdrop.fade {
   filter: alpha(opacity=0);
@@ -5142,12 +5146,12 @@ button.close {
 }
 .modal-backdrop.in {
   filter: alpha(opacity=50);
-  opacity: .5;
+  opacity: .6;
 }
 .modal-header {
   min-height: 16.42857143px;
   padding: 15px;
-  border-bottom: 1px solid #e5e5e5;
+  border-bottom: 1px solid rgba(51, 204, 255, 0.35);
 }
 .modal-header .close {
   margin-top: -2px;
@@ -5164,7 +5168,7 @@ button.close {
   padding: 19px 20px 20px;
   margin-top: 15px;
   text-align: right;
-  border-top: 1px solid #e5e5e5;
+  border-top: 1px solid rgba(51, 204, 255, 0.35);
 }
 .modal-footer .btn + .btn {
   margin-bottom: 0;
@@ -5227,10 +5231,10 @@ button.close {
 .tooltip-inner {
   max-width: 200px;
   padding: 3px 8px;
-  color: #fff;
+  color: #003344;
   text-align: center;
   text-decoration: none;
-  background-color: #000;
+  background-color: #3CF;
   border-radius: 4px;
 }
 .tooltip-arrow {
@@ -5245,7 +5249,7 @@ button.close {
   left: 50%;
   margin-left: -5px;
   border-width: 5px 5px 0;
-  border-top-color: #000;
+  border-top-color: #3CF;
 }
 .tooltip.top-left .tooltip-arrow {
   bottom: 0;
@@ -5264,21 +5268,21 @@ button.close {
   left: 0;
   margin-top: -5px;
   border-width: 5px 5px 5px 0;
-  border-right-color: #000;
+  border-right-color: #3CF;
 }
 .tooltip.left .tooltip-arrow {
   top: 50%;
   right: 0;
   margin-top: -5px;
   border-width: 5px 0 5px 5px;
-  border-left-color: #000;
+  border-left-color: #3CF;
 }
 .tooltip.bottom .tooltip-arrow {
   top: 0;
   left: 50%;
   margin-left: -5px;
   border-width: 0 5px 5px;
-  border-bottom-color: #000;
+  border-bottom-color: #3CF;
 }
 .tooltip.bottom-left .tooltip-arrow {
   top: 0;
@@ -5302,10 +5306,10 @@ button.close {
   padding: 1px;
   text-align: left;
   white-space: normal;
-  background-color: #fff;
+  background-color: #ffffff;
   background-clip: padding-box;
   border: 1px solid #ccc;
-  border: 1px solid rgba(0, 0, 0, .2);
+  border: 1px solid rgba(51, 204, 255, 0.4);
   border-radius: 6px;
   -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, .2);
           box-shadow: 0 5px 10px rgba(0, 0, 0, .2);
@@ -5328,7 +5332,9 @@ button.close {
   font-size: 14px;
   font-weight: normal;
   line-height: 18px;
-  background-color: #f7f7f7;
+  background-color: rgba(51, 204, 255, 0.15);
+  border-bottom-color: rgba(51, 204, 255, 0.4);
+  color: #003344;
   border-bottom: 1px solid #ebebeb;
   border-radius: 5px 5px 0 0;
 }
@@ -5356,14 +5362,14 @@ button.close {
   left: 50%;
   margin-left: -11px;
   border-top-color: #999;
-  border-top-color: rgba(0, 0, 0, .25);
+  border-top-color: rgba(51, 204, 255, 0.4);
   border-bottom-width: 0;
 }
 .popover.top > .arrow:after {
   bottom: 1px;
   margin-left: -10px;
   content: " ";
-  border-top-color: #fff;
+  border-top-color: #ffffff;
   border-bottom-width: 0;
 }
 .popover.right > .arrow {
@@ -5371,14 +5377,14 @@ button.close {
   left: -11px;
   margin-top: -11px;
   border-right-color: #999;
-  border-right-color: rgba(0, 0, 0, .25);
+  border-right-color: rgba(51, 204, 255, 0.4);
   border-left-width: 0;
 }
 .popover.right > .arrow:after {
   bottom: -10px;
   left: 1px;
   content: " ";
-  border-right-color: #fff;
+  border-right-color: #ffffff;
   border-left-width: 0;
 }
 .popover.bottom > .arrow {
@@ -5387,14 +5393,14 @@ button.close {
   margin-left: -11px;
   border-top-width: 0;
   border-bottom-color: #999;
-  border-bottom-color: rgba(0, 0, 0, .25);
+  border-bottom-color: rgba(51, 204, 255, 0.4);
 }
 .popover.bottom > .arrow:after {
   top: 1px;
   margin-left: -10px;
   content: " ";
   border-top-width: 0;
-  border-bottom-color: #fff;
+  border-bottom-color: #ffffff;
 }
 .popover.left > .arrow {
   top: 50%;
@@ -5402,14 +5408,14 @@ button.close {
   margin-top: -11px;
   border-right-width: 0;
   border-left-color: #999;
-  border-left-color: rgba(0, 0, 0, .25);
+  border-left-color: rgba(51, 204, 255, 0.4);
 }
 .popover.left > .arrow:after {
   right: 1px;
   bottom: -10px;
   content: " ";
   border-right-width: 0;
-  border-left-color: #fff;
+  border-left-color: #ffffff;
 }
 .carousel {
   position: relative;
@@ -5466,9 +5472,9 @@ button.close {
   left: 0;
   width: 15%;
   font-size: 20px;
-  color: #fff;
+  color: #3CF;
   text-align: center;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, .6);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
   filter: alpha(opacity=50);
   opacity: .5;
 }
@@ -5488,7 +5494,7 @@ button.close {
 }
 .carousel-control:hover,
 .carousel-control:focus {
-  color: #fff;
+  color: #3CF;
   text-decoration: none;
   filter: alpha(opacity=90);
   outline: none;
@@ -5543,8 +5549,7 @@ button.close {
   margin: 1px;
   text-indent: -999px;
   cursor: pointer;
-  background-color: #000 \9;
-  background-color: rgba(0, 0, 0, 0);
+  background-color: #3CF;
   border: 1px solid #fff;
   border-radius: 10px;
 }
@@ -5562,7 +5567,7 @@ button.close {
   z-index: 10;
   padding-top: 20px;
   padding-bottom: 20px;
-  color: #fff;
+  color: #3CF;
   text-align: center;
   text-shadow: 0 1px 2px rgba(0, 0, 0, .6);
 }
