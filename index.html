@@ -161,27 +161,34 @@
           
             <div class="col-md-7 col-sm-12">
             </div>
-              <div class="contact-form" action="#submit-form" method="post">
-                <h1><b><strong class="white">Contact Me</strong></b></h1>
-                <label>
-                    <input id="name" type="text" name="name" placeholder="Name..." />
-                </label>
-                
-                <label>
-                    <input id="email" type="email" name="email" placeholder="Email..." />
-                </label>
-                
-                <label>
-                    <input id="subject" type="text" name="subject" placeholder="Subject..." />
-                </label>
-                
-                <label>
-                    <textarea id="message" name="message" placeholder="Message..."></textarea>
-                </label>   
-                 <label>
-                    <input name="Submit" type="submit" class="button" value="Send Message" /> 
-                </label>    
-              </div>
+            <form class="contact-form"
+                  action="mailto:jmwojtusiak@gmail.com"
+                  method="post"
+                  enctype="text/plain">
+
+              <h1><b><strong class="white">Contact Me</strong></b></h1>
+
+              <label>
+                  <input id="name" type="text" name="name" placeholder="Name..." />
+              </label>
+
+              <label>
+                  <input id="email" type="email" name="email" placeholder="Email..." />
+              </label>
+
+              <label>
+                  <input id="subject" type="text" name="subject" placeholder="Subject..." />
+              </label>
+
+              <label>
+                  <textarea id="message" name="message" placeholder="Message..."></textarea>
+              </label>
+
+              <label>
+                  <input type="submit" class="button" value="Send Message" />
+              </label>
+
+            </form>
           </div><!-- contact END -->
           
         </div><!-- row END -->
