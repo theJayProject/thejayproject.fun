@@ -15,9 +15,26 @@
         <link rel="stylesheet" href="css/bootstrap.min.css">
         <link rel="stylesheet" href="css/bootstrap-theme.min.css">
         <link rel="stylesheet" href="css/templatemo-style.css">
-        <link rel="stylesheet" href="css/font-awesome.min.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
         <script src="js/vendor/modernizr-2.6.2-respond-1.1.0.min.js"></script>
+              <script type="text/javascript" src="https://cdn.emailjs.com/sdk/3.2.0/email.min.js"></script>
+              <script type="text/javascript">
+                (function(){
+                    emailjs.init("y5j6-kWNKuSLRSiTK"); // replace with your public key
+                })();
+
+                document.getElementById('contact-form').addEventListener('submit', function(event) {
+                    event.preventDefault(); // prevent default form submission
+
+                    emailjs.sendForm('service_gp1eaas', 'template_s6sl09v', this)
+                      .then(function() {
+                          alert('Message sent successfully!');
+                          document.getElementById('contact-form').reset();
+                      }, function(error) {
+                          alert('Oops! Something went wrong: ' + JSON.stringify(error));
+                      });
+                });
+              </script>
     </head>
     <body>
         <!--[if lt IE 7]>
@@ -158,7 +175,8 @@
         <div class="row">
           <div class="contact-us" id="contact">
             <div class="col-md-7 col-sm-12">
-              <form id="contact-form">
+            </div>
+              <form id="contact-form" class="contact-form">
                 <h1><b><strong class="white">Contact Me</strong></b></h1>
                 <label>
                   <input id="name" type="text" name="name" placeholder="Name..." required />
@@ -176,25 +194,6 @@
                   <input type="submit" class="button" value="Send Message" />
                 </label>
               </form>       
-              <script type="text/javascript" src="https://cdn.emailjs.com/sdk/3.2.0/email.min.js"></script>
-              <script type="text/javascript">
-                (function(){
-                    emailjs.init("y5j6-kWNKuSLRSiTK"); // replace with your public key
-                })();
-
-                document.getElementById('contact-form').addEventListener('submit', function(event) {
-                    event.preventDefault(); // prevent default form submission
-
-                    emailjs.sendForm('service_gp1eaas', 'template_s6sl09v', this)
-                      .then(function() {
-                          alert('Message sent successfully!');
-                          document.getElementById('contact-form').reset();
-                      }, function(error) {
-                          alert('Oops! Something went wrong: ' + JSON.stringify(error));
-                      });
-                });
-              </script>
-            </div>
           </div><!-- contact END -->
           
         </div><!-- row END -->
