@@ -156,39 +156,45 @@
         </div>
         
         <div class="row">
-        
           <div class="contact-us" id="contact">
-          
             <div class="col-md-7 col-sm-12">
-            </div>
-            <form class="contact-form"
-                  action="mailto:jmwojtusiak@gmail.com"
-                  method="post"
-                  enctype="text/plain">
-
-              <h1><b><strong class="white">Contact Me</strong></b></h1>
-
-              <label>
-                  <input id="name" type="text" name="name" placeholder="Name..." />
-              </label>
-
-              <label>
-                  <input id="email" type="email" name="email" placeholder="Email..." />
-              </label>
-
-              <label>
-                  <input id="subject" type="text" name="subject" placeholder="Subject..." />
-              </label>
-
-              <label>
-                  <textarea id="message" name="message" placeholder="Message..."></textarea>
-              </label>
-
-              <label>
+              <form id="contact-form">
+                <h1><b><strong class="white">Contact Me</strong></b></h1>
+                <label>
+                  <input id="name" type="text" name="name" placeholder="Name..." required />
+                </label>
+                <label>
+                  <input id="email" type="email" name="email" placeholder="Email..." required />
+                </label>
+                <label>
+                  <input id="subject" type="text" name="subject" placeholder="Subject..." required />
+                </label>
+                <label>
+                  <textarea id="message" name="message" placeholder="Message..." required></textarea>
+                </label>
+                <label>
                   <input type="submit" class="button" value="Send Message" />
-              </label>
+                </label>
+              </form>       
+              <script type="text/javascript" src="https://cdn.emailjs.com/sdk/3.2.0/email.min.js"></script>
+              <script type="text/javascript">
+                (function(){
+                    emailjs.init("y5j6-kWNKuSLRSiTK"); // replace with your public key
+                })();
 
-            </form>
+                document.getElementById('contact-form').addEventListener('submit', function(event) {
+                    event.preventDefault(); // prevent default form submission
+
+                    emailjs.sendForm('service_gp1eaas', 'template_s6sl09v', this)
+                      .then(function() {
+                          alert('Message sent successfully!');
+                          document.getElementById('contact-form').reset();
+                      }, function(error) {
+                          alert('Oops! Something went wrong: ' + JSON.stringify(error));
+                      });
+                });
+              </script>
+            </div>
           </div><!-- contact END -->
           
         </div><!-- row END -->
