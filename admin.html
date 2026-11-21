@@ -39,6 +39,21 @@ small{color:#91a0b0}
 </section>
 
 <section id="dashboard" class="hidden">
+
+<div class="card">
+  <h2>Manage projects</h2>
+  <input id="projectTitle" placeholder="Project name">
+  <input id="projectSlug" placeholder="Project URL name (e.g. unreal-engine)">
+  <textarea id="projectDescription" placeholder="Describe your project..."></textarea>
+  <input id="projectCover" placeholder="Project cover image URL (optional)">
+
+  <button id="saveProjectBtn">Create project</button>
+  <button id="cancelProjectBtn" class="secondary hidden">Cancel editing</button>
+
+  <h3>Your projects</h3>
+  <div id="projects"></div>
+</div>
+
 <div class="card">
 <h2>Write a post</h2>
 <input id="title" placeholder="Post title">
