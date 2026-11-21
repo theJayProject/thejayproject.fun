@@ -141,6 +141,7 @@ async function loadPosts(){
 
 function editPost(post){
   editingPost = post;
+  $("postProject").value = post.project_id || "";
   $("title").value = post.title || "";
   $("category").value = post.category || "";
   $("cover").value = post.cover_image || "";
@@ -155,6 +156,7 @@ function resetEditor(){
   $("category").value = "";
   $("cover").value = "";
   $("content").value = "";
+  $("postProject").value = "";
   $("cancelEdit").classList.add("hidden");
 }
 
