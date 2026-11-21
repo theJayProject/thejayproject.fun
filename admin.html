@@ -1,0 +1,217 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Jay Project — Admin</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#0b0d10;color:#e9eef5;font-family:system-ui,sans-serif;padding:30px}
+main{max-width:850px;margin:auto}
+h1{letter-spacing:2px}
+p{color:#929eac}
+input,textarea,button{width:100%;padding:13px;margin:8px 0;background:#141920;border:1px solid #2b3542;color:#fff;border-radius:8px;font:inherit}
+textarea{min-height:240px;resize:vertical}
+button{cursor:pointer;background:#76e0ff;color:#081018;font-weight:700;border:0}
+button.secondary{background:#202833;color:#fff}
+button.danger{background:#3a2025;color:#ff9da8}
+.card{background:#11161c;border:1px solid #27313b;padding:20px;border-radius:12px;margin:18px 0}
+.hidden{display:none!important}
+.row{display:flex;gap:10px}
+.row button{flex:1}
+small{color:#91a0b0}
+#status{min-height:24px;color:#76e0ff}
+</style>
+</head>
+<body>
+<main>
+<h1>THE JAY PROJECT / ADMIN</h1>
+<p>Owner-only publishing dashboard</p>
+<div id="status"></div>
+
+<section id="login" class="card">
+<h2>Owner login</h2>
+<input id="email" type="email" placeholder="Email" autocomplete="username">
+<input id="password" type="password" placeholder="Password" autocomplete="current-password">
+<button id="loginBtn">Sign in</button>
+</section>
+
+<section id="dashboard" class="hidden">
+<div class="card">
+<h2>Write a post</h2>
+<input id="title" placeholder="Post title">
+<input id="category" placeholder="Category (e.g. Unreal Engine)">
+<input id="cover" placeholder="Cover image URL (optional)">
+<textarea id="content" placeholder="Write your post here..."></textarea>
+<div class="row">
+<button id="draftBtn" class="secondary">Save draft</button>
+<button id="publishBtn">Publish</button>
+</div>
+<button id="cancelEdit" class="secondary hidden">Cancel editing</button>
+</div>
+
+<div class="card">
+<h2>Your posts</h2>
+<div id="posts"></div>
+<button id="logoutBtn" class="secondary">Sign out</button>
+</div>
+</section>
+</main>
+
+<script>
+const SUPABASE_URL = "https://hrehcbmreudtnjyhtvom.supabase.co/rest/v1/";
+const SUPABASE_KEY = "sb_publishable_HcsW0AjQHRRhBwK0ZuPo5w_7wDyavW0";
+
+const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+const $ = id => document.getElementById(id);
+let currentUser = null;
+let editingPost = null;
+
+function status(message){ $("status").textContent = message; }
+
+function slugify(text){
+  return text.toLowerCase().trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
+async function showDashboard(user){
+  currentUser = user;
+  $("login").classList.add("hidden");
+  $("dashboard").classList.remove("hidden");
+  await loadPosts();
+}
+
+async function loadPosts(){
+  const {data,error} = await db.from("posts")
+    .select("*")
+    .order("created_at",{ascending:false});
+
+  if(error){ status(error.message); return; }
+
+  $("posts").innerHTML = "";
+
+  (data || []).forEach(post=>{
+    const item = document.createElement("div");
+    item.className = "card";
+
+    const title = document.createElement("strong");
+    title.textContent = post.title;
+
+    const meta = document.createElement("p");
+    meta.textContent = post.published ? "Published" : "Draft";
+
+    const edit = document.createElement("button");
+    edit.className = "secondary";
+    edit.textContent = "Edit";
+    edit.onclick = ()=>editPost(post);
+
+    const del = document.createElement("button");
+    del.className = "danger";
+    del.textContent = "Delete";
+    del.onclick = ()=>deletePost(post.id);
+
+    item.append(title,meta,edit,del);
+    $("posts").appendChild(item);
+  });
+}
+
+function editPost(post){
+  editingPost = post;
+  $("title").value = post.title || "";
+  $("category").value = post.category || "";
+  $("cover").value = post.cover_image || "";
+  $("content").value = post.content || "";
+  $("cancelEdit").classList.remove("hidden");
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function resetEditor(){
+  editingPost = null;
+  $("title").value = "";
+  $("category").value = "";
+  $("cover").value = "";
+  $("content").value = "";
+  $("cancelEdit").classList.add("hidden");
+}
+
+async function savePost(published){
+  if(!currentUser){status("Please sign in first.");return;}
+
+  const title = $("title").value.trim();
+  const content = $("content").value.trim();
+
+  if(!title || !content){status("Enter a title and content.");return;}
+
+  const postData = {
+    title,
+    slug: slugify(title) + (editingPost ? "-" + editingPost.id.slice(0,8) : "-" + Date.now().toString().slice(-6)),
+    category: $("category").value.trim() || "Projects",
+    cover_image: $("cover").value.trim() || null,
+    excerpt: content.slice(0,180),
+    content,
+    published,
+    owner_id: currentUser.id
+  };
+
+  status("Saving...");
+
+  let result;
+  if(editingPost){
+    result = await db.from("posts")
+      .update(postData)
+      .eq("id",editingPost.id);
+  }else{
+    result = await db.from("posts").insert(postData);
+  }
+
+  if(result.error){status("Error: " + result.error.message);return;}
+
+  status(published ? "Post published!" : "Draft saved!");
+  resetEditor();
+  await loadPosts();
+}
+
+async function deletePost(id){
+  if(!confirm("Delete this post permanently?"))return;
+  const {error} = await db.from("posts").delete().eq("id",id);
+  if(error){status(error.message);return;}
+  status("Post deleted.");
+  await loadPosts();
+}
+
+$("loginBtn").onclick = async ()=>{
+  status("Signing in...");
+  const {data,error} = await db.auth.signInWithPassword({
+    email:$("email").value.trim(),
+    password:$("password").value
+  });
+  if(error){status("Login failed: " + error.message);return;}
+  await showDashboard(data.user);
+};
+
+$("draftBtn").onclick = ()=>savePost(false);
+$("publishBtn").onclick = ()=>savePost(true);
+$("cancelEdit").onclick = resetEditor;
+
+$("logoutBtn").onclick = async ()=>{
+  await db.auth.signOut();
+  currentUser = null;
+  $("dashboard").classList.add("hidden");
+  $("login").classList.remove("hidden");
+  status("Signed out.");
+};
+
+db.auth.getSession().then(({data})=>{
+  if(data.session)showDashboard(data.session.user);
+});
+
+db.auth.onAuthStateChange((event,session)=>{
+  if(event === "SIGNED_IN" && session)showDashboard(session.user);
+});
+</script>
+</body>
+</html>

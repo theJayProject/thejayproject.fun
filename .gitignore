@@ -1,7 +1,3 @@
-
-# Private admin page
-admin.html
-
 # Local secrets / environment files
 .env
 .env.*
