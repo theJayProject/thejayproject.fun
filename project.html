@@ -47,6 +47,8 @@
         #050b10;
     }
 
+    /* ORIGINAL BACKGROUND IMAGE */
+
     .project-background img {
       position: absolute;
       inset: -20% 0;
@@ -58,6 +60,32 @@
       transform: translate3d(0, 0, 0) scale(1.02);
       will-change: transform;
       animation: projectImageReveal 1.2s ease-out;
+    }
+
+    /* BRIGHTER MOUSE SPOTLIGHT IMAGE */
+
+    .project-background img.spotlight-image {
+      opacity: 1;
+      animation: none;
+      pointer-events: none;
+
+      filter: brightness(2) saturate(1.5);
+
+      mask-image: radial-gradient(
+        circle 220px at var(--mouse-x, -500px) var(--mouse-y, -500px),
+        black 0%,
+        black 35%,
+        rgba(0, 0, 0, .85) 55%,
+        transparent 100%
+      );
+
+      -webkit-mask-image: radial-gradient(
+        circle 220px at var(--mouse-x, -500px) var(--mouse-y, -500px),
+        black 0%,
+        black 35%,
+        rgba(0, 0, 0, .85) 55%,
+        transparent 100%
+      );
     }
 
     /* DARK GRADIENT OVERLAY */
@@ -80,7 +108,7 @@
           transparent 55%,
           rgba(4, 10, 15, .35) 100%
         );
-      z-index: 1;
+      z-index: -1;
       pointer-events: none;
     }
 
@@ -482,6 +510,58 @@
 
 
     // --------------------------------------------------
+    // PROJECT IMAGE MOUSE SPOTLIGHT
+    // FIX: TRACK THE ENTIRE HERO, NOT JUST THE BACKGROUND
+    // --------------------------------------------------
+
+    const projectHero =
+      document.querySelector(".project-hero");
+
+
+    projectHero.addEventListener("mousemove", (event) => {
+
+      const spotlightImage =
+        projectCoverContainer.querySelector(".spotlight-image");
+
+      if (!spotlightImage) return;
+
+      // Use the actual image position so the spotlight
+      // stays aligned even while the image is parallaxing.
+
+      const imageRect = spotlightImage.getBoundingClientRect();
+
+      const x = event.clientX - imageRect.left;
+      const y = event.clientY - imageRect.top;
+
+      projectCoverContainer.style.setProperty(
+        "--mouse-x",
+        `${x}px`
+      );
+
+      projectCoverContainer.style.setProperty(
+        "--mouse-y",
+        `${y}px`
+      );
+
+    });
+
+
+    projectHero.addEventListener("mouseleave", () => {
+
+      projectCoverContainer.style.setProperty(
+        "--mouse-x",
+        "-500px"
+      );
+
+      projectCoverContainer.style.setProperty(
+        "--mouse-y",
+        "-500px"
+      );
+
+    });
+
+
+    // --------------------------------------------------
     // PROJECT BACKGROUND PARALLAX
     // --------------------------------------------------
 
@@ -493,13 +573,13 @@
 
       parallaxFrame = requestAnimationFrame(() => {
 
-        const image =
-          projectCoverContainer.querySelector("img");
+        const images =
+          projectCoverContainer.querySelectorAll("img");
 
         const hero =
           document.querySelector(".project-hero");
 
-        if (!image || !hero) {
+        if (!images.length || !hero) {
           parallaxFrame = null;
           return;
         }
@@ -516,8 +596,14 @@
           Math.min(120, -heroRect.top * 0.25)
         );
 
-        image.style.transform =
-          `translate3d(0, ${movement}px, 0) scale(1.02)`;
+        // Move both image layers together.
+
+        images.forEach(image => {
+
+          image.style.transform =
+            `translate3d(0, ${movement}px, 0) scale(1.02)`;
+
+        });
 
         parallaxFrame = null;
 
@@ -624,10 +710,20 @@
 
       if (project.cover_image) {
 
+        const imageURL = escapeHTML(project.cover_image);
+
         projectCoverContainer.innerHTML = `
           <img
-            src="${escapeHTML(project.cover_image)}"
+            src="${imageURL}"
             alt=""
+            loading="eager"
+            onerror="this.style.display='none'"
+          >
+
+          <img
+            src="${imageURL}"
+            alt=""
+            class="spotlight-image"
             loading="eager"
             onerror="this.style.display='none'"
           >
@@ -639,7 +735,7 @@
 
       }
 
-      // Start parallax after inserting the image.
+      // Start parallax after inserting the images.
 
       updateProjectParallax();
 
