@@ -206,7 +206,7 @@
 
       const { data, error } = await db
         .from("projects")
-        .select("id,title,slug,description,status,created_at")
+        .select("id,title,slug,description,status,cover_image,created_at")
         .order("created_at", { ascending: false });
 
       if (error) {
@@ -242,6 +242,16 @@
             <span class="project-number">
               PROJECT_${number}
             </span>
+
+            ${project.cover_image ? `
+              <img
+                src="${escapeHTML(project.cover_image)}"
+                alt="${title}"
+                class="project-cover"
+                loading="lazy"
+                onerror="this.style.display='none'"
+              >
+            ` : ""}
 
             <h3>${title}</h3>
 
