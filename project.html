@@ -1,0 +1,501 @@
+
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#071018">
+  <meta name="description" content="Project page and development journal.">
+
+  <title>PROJECT // THEJAYPROJECT</title>
+
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="stylesheet" href="css/site.css">
+
+  <style>
+    .project-hero {
+      padding: 100px 0 70px;
+      position: relative;
+      border-bottom: 1px solid rgba(255,255,255,.1);
+    }
+
+    .project-hero h1 {
+      font-size: clamp(2.5rem, 7vw, 5.5rem);
+      margin: 15px 0;
+      overflow-wrap: anywhere;
+    }
+
+    .project-description {
+      max-width: 750px;
+      line-height: 1.8;
+      opacity: .8;
+      font-size: 1.05rem;
+    }
+
+    .project-details {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 25px;
+    }
+
+    .project-details span {
+      border: 1px solid rgba(0,255,200,.3);
+      padding: 7px 12px;
+      font-size: .75rem;
+      letter-spacing: 1px;
+      color: #00ffc8;
+    }
+
+    .project-content {
+      padding-top: 60px;
+      padding-bottom: 90px;
+    }
+
+    .project-post {
+      padding: 25px 0;
+      border-bottom: 1px solid rgba(255,255,255,.12);
+    }
+
+    .project-post h3 {
+      margin: 12px 0;
+    }
+
+    .project-post p {
+      line-height: 1.8;
+      opacity: .8;
+      white-space: pre-wrap;
+    }
+
+    .project-post .post-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      font-size: .75rem;
+      opacity: .65;
+    }
+
+    .back-link {
+      display: inline-block;
+      margin-bottom: 30px;
+      text-decoration: none;
+    }
+
+    .loading-message {
+      opacity: .65;
+      padding: 30px 0;
+    }
+
+    .project-error {
+      padding: 40px 0;
+    }
+
+    .project-error h2 {
+      margin-bottom: 15px;
+    }
+  </style>
+</head>
+
+
+<body>
+
+  <div class="cursor-glow" aria-hidden="true"></div>
+
+
+  <!-- HEADER -->
+
+  <header class="topbar">
+
+    <a class="brand" href="index.html">
+      <span class="brand-mark">[J]</span>
+      THEJAYPROJECT<span class="accent">.FUN</span>
+    </a>
+
+    <nav>
+      <a href="index.html#projects">PROJECTS</a>
+      <a href="index.html#log">DEV LOG</a>
+      <a href="index.html#subscribe">SUBSCRIBE</a>
+      <a class="login-link" href="admin.html" style="display:none">ADMIN ↗</a>
+    </nav>
+
+  </header>
+
+
+  <main>
+
+    <!-- PROJECT HEADER -->
+
+    <section class="section project-hero">
+
+      <a class="back-link" href="index.html#projects">
+        ← BACK TO PROJECT INDEX
+      </a>
+
+      <p class="eyebrow" id="project-label">
+        PROJECT / LOADING
+      </p>
+
+      <h1 id="project-title">
+        LOADING...
+      </h1>
+
+      <p class="project-description" id="project-description">
+        Retrieving project information...
+      </p>
+
+      <div class="project-details" id="project-details"></div>
+
+    </section>
+
+
+    <!-- PROJECT DEV LOG -->
+
+    <section class="section project-content">
+
+      <div class="section-heading">
+
+        <div>
+          <p class="eyebrow">PROJECT TRANSMISSIONS</p>
+          <h2>DEVELOPMENT LOG</h2>
+        </div>
+
+        <span class="section-note">PROJECT-SPECIFIC UPDATES</span>
+
+      </div>
+
+      <div id="project-posts" class="post-list">
+
+        <p class="loading-message">
+          LOADING PROJECT UPDATES...
+        </p>
+
+      </div>
+
+    </section>
+
+  </main>
+
+
+  <!-- FOOTER -->
+
+  <footer>
+
+    <span>THEJAYPROJECT.FUN // PROJECT JOURNAL</span>
+
+    <span>
+      © <span id="year"></span> — ALL SYSTEMS NOMINAL
+    </span>
+
+  </footer>
+
+
+  <!-- SUPABASE -->
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
+  <script>
+
+    // --------------------------------------------------
+    // SUPABASE CONNECTION
+    // --------------------------------------------------
+
+    const SUPABASE_URL =
+      "https://hrehcbmreudtnjyhtvom.supabase.co";
+
+    // Paste the SAME publishable key used in index.html.
+
+    const SUPABASE_KEY =
+      "sb_publishable_HcsW0AjQHRRhBwK0ZuPo5w_7wDyavW0";
+
+    const db = window.supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_KEY
+    );
+
+
+    // --------------------------------------------------
+    // ELEMENTS
+    // --------------------------------------------------
+
+    const projectTitle =
+      document.getElementById("project-title");
+
+    const projectDescription =
+      document.getElementById("project-description");
+
+    const projectLabel =
+      document.getElementById("project-label");
+
+    const projectDetails =
+      document.getElementById("project-details");
+
+    const projectPosts =
+      document.getElementById("project-posts");
+
+
+    document.getElementById("year").textContent =
+      new Date().getFullYear();
+
+
+    // --------------------------------------------------
+    // HELPERS
+    // --------------------------------------------------
+
+    function escapeHTML(value) {
+
+      return String(value ?? "").replace(/[&<>"']/g, character => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;"
+      })[character]);
+
+    }
+
+
+    function formatDate(value) {
+
+      if (!value) return "";
+
+      const date = new Date(value);
+
+      if (Number.isNaN(date.getTime())) return "";
+
+      return date.toLocaleDateString("en-CA").replaceAll("-", ".");
+
+    }
+
+
+    function showError(message) {
+
+      projectPosts.innerHTML = `
+        <div class="project-error">
+          <h2>PROJECT ERROR</h2>
+          <p>${escapeHTML(message)}</p>
+          <a href="index.html#projects">← BACK TO PROJECT INDEX</a>
+        </div>
+      `;
+
+    }
+
+
+    // --------------------------------------------------
+    // GET PROJECT SLUG FROM URL
+    // --------------------------------------------------
+
+    const params = new URLSearchParams(
+      window.location.search
+    );
+
+    const projectSlug = params.get("slug");
+
+
+    // --------------------------------------------------
+    // LOAD PROJECT
+    // --------------------------------------------------
+
+    async function loadProject() {
+
+      if (!projectSlug) {
+
+        projectTitle.textContent = "PROJECT NOT FOUND";
+
+        projectDescription.textContent =
+          "No project was specified in the URL.";
+
+        projectPosts.innerHTML = `
+          <p class="loading-message">
+            Please return to the project index and select a project.
+          </p>
+          <a href="index.html#projects">← BACK TO PROJECT INDEX</a>
+        `;
+
+        return;
+
+      }
+
+
+      const { data: project, error } = await db
+        .from("projects")
+        .select("id,title,slug,description,status,created_at")
+        .eq("slug", projectSlug)
+        .maybeSingle();
+
+
+      if (error) {
+
+        console.error("Project loading error:", error);
+
+        showError(error.message);
+
+        return;
+
+      }
+
+
+      if (!project) {
+
+        projectTitle.textContent = "PROJECT NOT FOUND";
+
+        projectDescription.textContent =
+          "This project does not exist or is no longer available.";
+
+        projectPosts.innerHTML = `
+          <a href="index.html#projects">← BACK TO PROJECT INDEX</a>
+        `;
+
+        return;
+
+      }
+
+
+      // --------------------------------------------------
+      // DISPLAY PROJECT DETAILS
+      // --------------------------------------------------
+
+      projectTitle.textContent = project.title;
+
+      projectDescription.textContent =
+        project.description || "No project description available yet.";
+
+      projectLabel.textContent =
+        "PROJECT / " + project.slug.toUpperCase();
+
+      document.title =
+        project.title + " // THEJAYPROJECT";
+
+
+      projectDetails.innerHTML = `
+        <span>${escapeHTML(project.status || "IN PROGRESS")}</span>
+        <span>PROJECT LOG</span>
+        <span>CREATED ${escapeHTML(formatDate(project.created_at))}</span>
+      `;
+
+
+      // --------------------------------------------------
+      // LOAD PROJECT POSTS
+      // --------------------------------------------------
+
+      await loadProjectPosts(project.id);
+
+    }
+
+
+    // --------------------------------------------------
+    // LOAD POSTS ASSOCIATED WITH THIS PROJECT
+    // --------------------------------------------------
+
+    async function loadProjectPosts(projectId) {
+
+      projectPosts.innerHTML = `
+        <p class="loading-message">
+          LOADING PROJECT UPDATES...
+        </p>
+      `;
+
+
+      const { data: posts, error } = await db
+        .from("posts")
+        .select("id,title,content,category,created_at,project_id")
+        .eq("published", true)
+        .eq("project_id", projectId)
+        .order("created_at", { ascending: false });
+
+
+      if (error) {
+
+        console.error("Project posts error:", error);
+
+        showError(error.message);
+
+        return;
+
+      }
+
+
+      if (!posts || posts.length === 0) {
+
+        projectPosts.innerHTML = `
+          <p class="loading-message">
+            NO PUBLISHED UPDATES FOR THIS PROJECT YET.
+          </p>
+        `;
+
+        return;
+
+      }
+
+
+      projectPosts.innerHTML = posts.map(post => {
+
+        const title = escapeHTML(post.title);
+
+        const category = escapeHTML(
+          post.category || "PROJECT UPDATE"
+        );
+
+        const date = formatDate(post.created_at);
+
+        const content = escapeHTML(
+          (post.content || "")
+            .replace(/<[^>]*>/g, " ")
+            .replace(/\s+/g, " ")
+        );
+
+
+        return `
+          <article class="project-post">
+
+            <div class="post-meta">
+              <span>${date}</span>
+              <span>${category}</span>
+              <span>PROJECT UPDATE</span>
+            </div>
+
+            <h3>${title}</h3>
+
+            <p>${content}</p>
+
+            <span class="offline-label">
+              ◈ READABLE OFFLINE AFTER VISIT
+            </span>
+
+          </article>
+        `;
+
+      }).join("");
+
+    }
+
+
+    // --------------------------------------------------
+    // INITIALISE
+    // --------------------------------------------------
+
+    loadProject();
+
+
+    // --------------------------------------------------
+    // REFRESH WHEN VISITOR RETURNS
+    // --------------------------------------------------
+
+    document.addEventListener("visibilitychange", () => {
+
+      if (!document.hidden) {
+        loadProject();
+      }
+
+    });
+
+  </script>
+
+
+  <!-- EXISTING SITE SCRIPT -->
+
+  <script src="js/site.js"></script>
+
+</body>
+</html>
