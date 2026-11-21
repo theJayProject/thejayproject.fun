@@ -1,0 +1,8 @@
+{
+  "name": "Jay Project Log",
+  "short_name": "Project Log",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#060c11",
+  "theme_color": "#071018"
+}
