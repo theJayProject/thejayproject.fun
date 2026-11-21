@@ -364,7 +364,7 @@ async function savePost(published){
     ),
     category: $("category").value.trim() || "Projects",
     cover_image: $("cover").value.trim() || null,
-    exerpt: content.slice(0,180),
+    excerpt: content.slice(0,180),
     content,
     published,
     owner_id: currentUser.id,
