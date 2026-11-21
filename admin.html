@@ -203,6 +203,7 @@ async function deletePost(id){
   await loadPosts();
 }
 
+
 async function loadProjects(){
   const {data,error} = await db.from("projects")
     .select("*")
@@ -215,7 +216,17 @@ async function loadProjects(){
 
   $("projects").innerHTML = "";
 
+  const selector = $("postProject");
+  selector.innerHTML = '<option value="">General post (no project)</option>';
+
   (data || []).forEach(project => {
+    // Add project to the post dropdown
+    const option = document.createElement("option");
+    option.value = project.id;
+    option.textContent = project.title;
+    selector.appendChild(option);
+
+    // Display project in the management list
     const item = document.createElement("div");
     item.className = "card";
 
@@ -232,6 +243,7 @@ async function loadProjects(){
     $("projects").appendChild(item);
   });
 }
+
 
 $("saveProjectBtn").onclick = async () => {
   if(!currentUser){
