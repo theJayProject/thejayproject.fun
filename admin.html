@@ -98,6 +98,7 @@ async function showDashboard(user){
   $("login").classList.add("hidden");
   $("dashboard").classList.remove("hidden");
   await loadPosts();
+  await loadProjects();
 }
 
 async function loadPosts(){
@@ -197,6 +198,74 @@ async function deletePost(id){
   status("Post deleted.");
   await loadPosts();
 }
+
+async function loadProjects(){
+  const {data,error} = await db.from("projects")
+    .select("*")
+    .order("created_at",{ascending:false});
+
+  if(error){
+    status("Projects error: " + error.message);
+    return;
+  }
+
+  $("projects").innerHTML = "";
+
+  (data || []).forEach(project => {
+    const item = document.createElement("div");
+    item.className = "card";
+
+    const title = document.createElement("strong");
+    title.textContent = project.title;
+
+    const description = document.createElement("p");
+    description.textContent = project.description || "No description";
+
+    const slug = document.createElement("small");
+    slug.textContent = "URL: " + project.slug;
+
+    item.append(title, description, slug);
+    $("projects").appendChild(item);
+  });
+}
+
+$("saveProjectBtn").onclick = async () => {
+  if(!currentUser){
+    status("Please sign in first.");
+    return;
+  }
+
+  const title = $("projectTitle").value.trim();
+  const slug = slugify($("projectSlug").value || title);
+
+  if(!title || !slug){
+    status("Enter a project name.");
+    return;
+  }
+
+  status("Creating project...");
+
+  const {error} = await db.from("projects").insert({
+    title,
+    slug,
+    description: $("projectDescription").value.trim(),
+    cover_image: $("projectCover").value.trim() || null,
+    owner_id: currentUser.id
+  });
+
+  if(error){
+    status("Project error: " + error.message);
+    return;
+  }
+
+  $("projectTitle").value = "";
+  $("projectSlug").value = "";
+  $("projectDescription").value = "";
+  $("projectCover").value = "";
+
+  status("Project created!");
+  await loadProjects();
+};
 
 $("loginBtn").onclick = async ()=>{
   status("Signing in...");
