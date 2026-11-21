@@ -14,39 +14,149 @@
   <link rel="stylesheet" href="css/site.css">
 
   <style>
+
+    /* --------------------------------------------------
+       PROJECT HERO
+    -------------------------------------------------- */
+
     .project-hero {
-      padding: 100px 0 70px;
       position: relative;
-      border-bottom: 1px solid rgba(255,255,255,.1);
+      isolation: isolate;
+      overflow: hidden;
+      min-height: 620px;
+      padding: 100px clamp(20px, 8vw, 120px) 75px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      background: #050b10;
+    }
+
+    /* BACKGROUND IMAGE CONTAINER */
+
+    .project-background {
+      position: absolute;
+      inset: 0;
+      z-index: -2;
+      overflow: hidden;
+      background:
+        radial-gradient(
+          circle at 70% 40%,
+          rgba(20, 100, 120, .2),
+          transparent 60%
+        ),
+        #050b10;
+    }
+
+    .project-background img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      opacity: .75;
+      animation: projectImageReveal 1.2s ease-out;
+    }
+
+    /* DARK GRADIENT OVERLAY */
+
+    .project-background::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(
+          90deg,
+          rgba(4, 10, 15, .98) 0%,
+          rgba(4, 10, 15, .88) 30%,
+          rgba(4, 10, 15, .60) 65%,
+          rgba(4, 10, 15, .45) 100%
+        ),
+        linear-gradient(
+          0deg,
+          rgba(4, 10, 15, .95) 0%,
+          transparent 55%,
+          rgba(4, 10, 15, .35) 100%
+        );
+      z-index: 1;
+    }
+
+    /* HERO CONTENT */
+
+    .project-hero-content {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      max-width: 1050px;
+    }
+
+    .project-hero .back-link {
+      display: inline-block;
+      margin-bottom: 55px;
+      color: var(--cyan);
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: .08em;
+      transition: opacity .2s;
+    }
+
+    .project-hero .back-link:hover {
+      opacity: .65;
+    }
+
+    .project-hero .eyebrow {
+      color: var(--green);
+      text-shadow: 0 2px 10px #000;
     }
 
     .project-hero h1 {
-      font-size: clamp(2.5rem, 7vw, 5.5rem);
-      margin: 15px 0;
+      font-size: clamp(3.5rem, 9vw, 8rem);
+      line-height: .95;
+      letter-spacing: -.065em;
+      margin: 20px 0 30px;
+      max-width: 1000px;
       overflow-wrap: anywhere;
+      color: #fff;
+      text-shadow:
+        0 3px 10px rgba(0,0,0,.9),
+        0 10px 35px rgba(0,0,0,.7);
     }
 
     .project-description {
-      max-width: 750px;
+      max-width: 650px;
       line-height: 1.8;
-      opacity: .8;
-      font-size: 1.05rem;
+      color: #e0edf1;
+      font-size: clamp(1rem, 1.5vw, 1.15rem);
+      text-shadow:
+        0 2px 8px rgba(0,0,0,1),
+        0 4px 20px rgba(0,0,0,.9);
+      margin-bottom: 30px;
     }
+
+    /* PROJECT DETAILS */
 
     .project-details {
       display: flex;
       flex-wrap: wrap;
       gap: 12px;
-      margin-top: 25px;
+      margin-top: 30px;
     }
 
     .project-details span {
-      border: 1px solid rgba(0,255,200,.3);
-      padding: 7px 12px;
-      font-size: .75rem;
+      background: rgba(3, 12, 17, .85);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(70,229,255,.35);
+      padding: 9px 14px;
+      font-family: var(--mono);
+      font-size: 10px;
       letter-spacing: 1px;
-      color: #00ffc8;
+      color: var(--cyan);
+      text-shadow: 0 2px 5px #000;
     }
+
+    /* --------------------------------------------------
+       PROJECT DEVELOPMENT LOG
+    -------------------------------------------------- */
 
     .project-content {
       padding-top: 60px;
@@ -54,17 +164,18 @@
     }
 
     .project-post {
-      padding: 25px 0;
-      border-bottom: 1px solid rgba(255,255,255,.12);
+      padding: 30px 0;
+      border-bottom: 1px solid var(--line);
     }
 
     .project-post h3 {
-      margin: 12px 0;
+      margin: 15px 0;
+      font-size: clamp(21px, 3vw, 30px);
     }
 
     .project-post p {
       line-height: 1.8;
-      opacity: .8;
+      opacity: .85;
       white-space: pre-wrap;
     }
 
@@ -73,14 +184,23 @@
       flex-wrap: wrap;
       gap: 15px;
       font-size: .75rem;
-      opacity: .65;
+      opacity: .75;
     }
 
-    .back-link {
-      display: inline-block;
-      margin-bottom: 30px;
-      text-decoration: none;
+    /* POST IMAGES */
+
+    .project-post-cover {
+      display: block;
+      width: 100%;
+      max-width: 750px;
+      aspect-ratio: 16 / 9;
+      object-fit: cover;
+      border-radius: 8px;
+      margin: 25px 0;
+      border: 1px solid rgba(70,229,255,.2);
     }
+
+    /* OTHER ELEMENTS */
 
     .loading-message {
       opacity: .65;
@@ -95,43 +215,72 @@
       margin-bottom: 15px;
     }
 
-    /* PROJECT COVER IMAGE */
+    /* ANIMATION */
 
-    .project-page-cover {
-      display: block;
-      width: 100%;
-      max-width: 900px;
-      aspect-ratio: 16 / 9;
-      object-fit: cover;
-      border-radius: 8px;
-      margin: 30px 0;
-      border: 1px solid rgba(70,229,255,.2);
+    @keyframes projectImageReveal {
+      from {
+        opacity: 0;
+        transform: scale(1.04);
+      }
+
+      to {
+        opacity: .75;
+        transform: scale(1);
+      }
     }
 
-    /* PROJECT POST IMAGES */
-
-    .project-post-cover {
-      display: block;
-      width: 100%;
-      max-width: 750px;
-      aspect-ratio: 16 / 9;
-      object-fit: cover;
-      border-radius: 8px;
-      margin: 20px 0;
-      border: 1px solid rgba(70,229,255,.2);
-    }
+    /* --------------------------------------------------
+       MOBILE
+    -------------------------------------------------- */
 
     @media (max-width: 760px) {
+
       .project-hero {
-        padding-top: 65px;
+        min-height: 560px;
+        padding: 75px 20px 60px;
       }
 
-      .project-page-cover,
-      .project-post-cover {
-        width: 100%;
-        aspect-ratio: 16 / 9;
+      .project-hero .back-link {
+        margin-bottom: 45px;
       }
+
+      .project-hero h1 {
+        font-size: clamp(3rem, 13vw, 5rem);
+      }
+
+      .project-description {
+        font-size: 1rem;
+      }
+
+      .project-background img {
+        object-position: center;
+      }
+
+      .project-background::after {
+        background:
+          linear-gradient(
+            90deg,
+            rgba(4,10,15,.93),
+            rgba(4,10,15,.72)
+          ),
+          linear-gradient(
+            0deg,
+            rgba(4,10,15,.98),
+            transparent 85%
+          );
+      }
+
+      .project-details {
+        gap: 8px;
+      }
+
+      .project-details span {
+        font-size: 9px;
+        padding: 8px 10px;
+      }
+
     }
+
   </style>
 </head>
 
@@ -159,35 +308,41 @@
 
   <main>
 
-    <!-- PROJECT HEADER -->
+    <!-- PROJECT HERO -->
 
     <section class="section project-hero">
 
-      <a class="back-link" href="index.html#projects">
-        ← BACK TO PROJECT INDEX
-      </a>
+      <!-- BACKGROUND IMAGE -->
 
-      <p class="eyebrow" id="project-label">
-        PROJECT / LOADING
-      </p>
+      <div id="project-cover-container" class="project-background"></div>
 
-      <h1 id="project-title">
-        LOADING...
-      </h1>
+      <!-- FOREGROUND CONTENT -->
 
-      <p class="project-description" id="project-description">
-        Retrieving project information...
-      </p>
+      <div class="project-hero-content">
 
-      <!-- PROJECT COVER IMAGE -->
+        <a class="back-link" href="index.html#projects">
+          ← BACK TO PROJECT INDEX
+        </a>
 
-      <div id="project-cover-container"></div>
+        <p class="eyebrow" id="project-label">
+          PROJECT / LOADING
+        </p>
 
-      <div class="project-details" id="project-details"></div>
+        <h1 id="project-title">
+          LOADING...
+        </h1>
+
+        <p class="project-description" id="project-description">
+          Retrieving project information...
+        </p>
+
+        <div class="project-details" id="project-details"></div>
+
+      </div>
 
     </section>
 
-    <!-- PROJECT DEV LOG -->
+    <!-- PROJECT DEVELOPMENT LOG -->
 
     <section class="section project-content">
 
@@ -405,7 +560,7 @@
 
 
       // --------------------------------------------------
-      // DISPLAY PROJECT COVER IMAGE
+      // DISPLAY PROJECT BACKGROUND IMAGE
       // --------------------------------------------------
 
       if (project.cover_image) {
@@ -413,9 +568,8 @@
         projectCoverContainer.innerHTML = `
           <img
             src="${escapeHTML(project.cover_image)}"
-            alt="${escapeHTML(project.title)}"
-            class="project-page-cover"
-            loading="lazy"
+            alt=""
+            loading="eager"
             onerror="this.style.display='none'"
           >
         `;
@@ -426,6 +580,10 @@
 
       }
 
+
+      // --------------------------------------------------
+      // DISPLAY PROJECT STATUS
+      // --------------------------------------------------
 
       projectDetails.innerHTML = `
         <span>${escapeHTML(project.status || "IN PROGRESS")}</span>
