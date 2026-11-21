@@ -320,7 +320,7 @@
 
       const { data: project, error } = await db
         .from("projects")
-        .select("id,title,slug,description,status,created_at")
+        .select("id,title,slug,description,status,cover_image,created_at")
         .eq("slug", projectSlug)
         .maybeSingle();
 
