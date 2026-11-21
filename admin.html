@@ -167,11 +167,11 @@ async function savePost(published){
   if(!title || !content){status("Enter a title and content.");return;}
 
   const postData = {
-    title,
+    title,project_id: $("postProject").value || null,
     slug: slugify(title) + (editingPost ? "-" + editingPost.id.slice(0,8) : "-" + Date.now().toString().slice(-6)),
     category: $("category").value.trim() || "Projects",
     cover_image: $("cover").value.trim() || null,
-    excerpt: content.slice(0,180),
+    exerpt: content.slice(0,180),
     content,
     published,
     owner_id: currentUser.id
@@ -229,7 +229,7 @@ async function loadProjects(){
     // Display project in the management list
     const item = document.createElement("div");
     item.className = "card";
-
+    q
     const title = document.createElement("strong");
     title.textContent = project.title;
 
