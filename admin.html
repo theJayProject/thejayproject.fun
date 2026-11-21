@@ -12,8 +12,8 @@ body{margin:0;background:#0b0d10;color:#e9eef5;font-family:system-ui,sans-serif;
 main{max-width:850px;margin:auto}
 h1{letter-spacing:2px}
 p{color:#929eac}
-input,textarea,button{width:100%;padding:13px;margin:8px 0;background:#141920;border:1px solid #2b3542;color:#fff;border-radius:8px;font:inherit}
-textarea{min-height:240px;resize:vertical}
+input,textarea,button,select{width:100%;padding:13px;margin:8px 0;background:#141920;border:1px solid #2b3542;color:#fff;border-radius:8px;font:inherit}
+textarea{min-height:160px;resize:vertical}
 button{cursor:pointer;background:#76e0ff;color:#081018;font-weight:700;border:0}
 button.secondary{background:#202833;color:#fff}
 button.danger{background:#3a2025;color:#ff9da8}
@@ -41,29 +41,31 @@ small{color:#91a0b0}
 <section id="dashboard" class="hidden">
 
 <div class="card">
-  <h2>Manage projects</h2>
-  <input id="projectTitle" placeholder="Project name">
-  <input id="projectSlug" placeholder="Project URL name (e.g. unreal-engine)">
-  <textarea id="projectDescription" placeholder="Describe your project..."></textarea>
-  <input id="projectCover" placeholder="Project cover image URL (optional)">
+<h2>Manage projects</h2>
+<input id="projectTitle" placeholder="Project name">
+<input id="projectSlug" placeholder="Project URL name (e.g. unreal-engine)">
+<textarea id="projectDescription" placeholder="Describe your project..."></textarea>
+<input id="projectCover" placeholder="Project cover image URL (optional)">
 
-  <button id="saveProjectBtn">Create project</button>
-  <button id="cancelProjectBtn" class="secondary hidden">Cancel editing</button>
+<button id="saveProjectBtn">Create project</button>
+<button id="cancelProjectBtn" class="secondary hidden">Cancel editing</button>
 
-  <h3>Your projects</h3>
-  <div id="projects"></div>
+<h3>Your projects</h3>
+<div id="projects"></div>
 </div>
 
 <div class="card">
 <h2>Write a post</h2>
 
-<select id="postProject" style="width:100%;padding:13px;margin:8px 0;background:#141920;border:1px solid #2b3542;color:#fff;border-radius:8px;font:inherit">
-  <option value="">General post (no project)</option>
+<select id="postProject">
+<option value="">General post (no project)</option>
 </select>
+
 <input id="title" placeholder="Post title">
 <input id="category" placeholder="Category (e.g. Unreal Engine)">
 <input id="cover" placeholder="Cover image URL (optional)">
 <textarea id="content" placeholder="Write your post here..."></textarea>
+
 <div class="row">
 <button id="draftBtn" class="secondary">Save draft</button>
 <button id="publishBtn">Publish</button>
@@ -76,6 +78,7 @@ small{color:#91a0b0}
 <div id="posts"></div>
 <button id="logoutBtn" class="secondary">Sign out</button>
 </div>
+
 </section>
 </main>
 
@@ -86,10 +89,14 @@ const SUPABASE_KEY = "sb_publishable_HcsW0AjQHRRhBwK0ZuPo5w_7wDyavW0";
 const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const $ = id => document.getElementById(id);
+
 let currentUser = null;
 let editingPost = null;
+let editingProject = null;
 
-function status(message){ $("status").textContent = message; }
+function status(message){
+  $("status").textContent = message;
+}
 
 function slugify(text){
   return text.toLowerCase().trim()
@@ -97,115 +104,17 @@ function slugify(text){
     .replace(/^-|-$/g, "");
 }
 
+// Show dashboard after login
 async function showDashboard(user){
   currentUser = user;
   $("login").classList.add("hidden");
   $("dashboard").classList.remove("hidden");
-  await loadPosts();
+
   await loadProjects();
-}
-
-async function loadPosts(){
-  const {data,error} = await db.from("posts")
-    .select("*")
-    .order("created_at",{ascending:false});
-
-  if(error){ status(error.message); return; }
-
-  $("posts").innerHTML = "";
-
-  (data || []).forEach(post=>{
-    const item = document.createElement("div");
-    item.className = "card";
-
-    const title = document.createElement("strong");
-    title.textContent = post.title;
-
-    const meta = document.createElement("p");
-    meta.textContent = post.published ? "Published" : "Draft";
-
-    const edit = document.createElement("button");
-    edit.className = "secondary";
-    edit.textContent = "Edit";
-    edit.onclick = ()=>editPost(post);
-
-    const del = document.createElement("button");
-    del.className = "danger";
-    del.textContent = "Delete";
-    del.onclick = ()=>deletePost(post.id);
-
-    item.append(title,meta,edit,del);
-    $("posts").appendChild(item);
-  });
-}
-
-function editPost(post){
-  editingPost = post;
-  $("postProject").value = post.project_id || "";
-  $("title").value = post.title || "";
-  $("category").value = post.category || "";
-  $("cover").value = post.cover_image || "";
-  $("content").value = post.content || "";
-  $("cancelEdit").classList.remove("hidden");
-  window.scrollTo({top:0,behavior:"smooth"});
-}
-
-function resetEditor(){
-  editingPost = null;
-  $("title").value = "";
-  $("category").value = "";
-  $("cover").value = "";
-  $("content").value = "";
-  $("postProject").value = "";
-  $("cancelEdit").classList.add("hidden");
-}
-
-async function savePost(published){
-  if(!currentUser){status("Please sign in first.");return;}
-
-  const title = $("title").value.trim();
-  const content = $("content").value.trim();
-
-  if(!title || !content){status("Enter a title and content.");return;}
-
-  const postData = {
-    title,project_id: $("postProject").value || null,
-    slug: slugify(title) + (editingPost ? "-" + editingPost.id.slice(0,8) : "-" + Date.now().toString().slice(-6)),
-    category: $("category").value.trim() || "Projects",
-    cover_image: $("cover").value.trim() || null,
-    exerpt: content.slice(0,180),
-    content,
-    published,
-    owner_id: currentUser.id
-  };
-
-  status("Saving...");
-
-  let result;
-  if(editingPost){
-    result = await db.from("posts")
-      .update(postData)
-      .eq("id",editingPost.id);
-  }else{
-    result = await db.from("posts").insert(postData);
-  }
-
-  if(result.error){status("Error: " + result.error.message);return;}
-
-  status(published ? "Post published!" : "Draft saved!");
-  resetEditor();
   await loadPosts();
 }
 
-async function deletePost(id){
-  if(!confirm("Delete this post permanently?"))return;
-  const {error} = await db.from("posts").delete().eq("id",id);
-  if(error){status(error.message);return;}
-  status("Post deleted.");
-  await loadPosts();
-}
-
-
+// LOAD PROJECTS
 async function loadProjects(){
   const {data,error} = await db.from("projects")
     .select("*")
@@ -222,16 +131,17 @@ async function loadProjects(){
   selector.innerHTML = '<option value="">General post (no project)</option>';
 
   (data || []).forEach(project => {
-    // Add project to the post dropdown
+
+    // Add project to post dropdown
     const option = document.createElement("option");
     option.value = project.id;
     option.textContent = project.title;
     selector.appendChild(option);
 
-    // Display project in the management list
+    // Display project in management list
     const item = document.createElement("div");
     item.className = "card";
-    q
+
     const title = document.createElement("strong");
     title.textContent = project.title;
 
@@ -241,12 +151,22 @@ async function loadProjects(){
     const slug = document.createElement("small");
     slug.textContent = "URL: " + project.slug;
 
-    item.append(title, description, slug);
+    const edit = document.createElement("button");
+    edit.className = "secondary";
+    edit.textContent = "Edit project";
+    edit.onclick = () => editProject(project);
+
+    const del = document.createElement("button");
+    del.className = "danger";
+    del.textContent = "Delete project";
+    del.onclick = () => deleteProject(project.id);
+
+    item.append(title,description,slug,edit,del);
     $("projects").appendChild(item);
   });
 }
 
-
+// CREATE OR UPDATE PROJECT
 $("saveProjectBtn").onclick = async () => {
   if(!currentUser){
     status("Please sign in first.");
@@ -261,58 +181,282 @@ $("saveProjectBtn").onclick = async () => {
     return;
   }
 
-  status("Creating project...");
-
-  const {error} = await db.from("projects").insert({
+  const projectData = {
     title,
     slug,
     description: $("projectDescription").value.trim(),
     cover_image: $("projectCover").value.trim() || null,
-    owner_id: currentUser.id
-  });
+    owner_id: currentUser.id,
+    updated_at: new Date().toISOString()
+  };
 
-  if(error){
-    status("Project error: " + error.message);
+  status(editingProject ? "Updating project..." : "Creating project...");
+
+  let result;
+
+  if(editingProject){
+    result = await db.from("projects")
+      .update(projectData)
+      .eq("id",editingProject.id);
+  }else{
+    result = await db.from("projects")
+      .insert(projectData);
+  }
+
+  if(result.error){
+    status("Project error: " + result.error.message);
     return;
   }
+
+  resetProjectEditor();
+  status(editingProject ? "Project updated!" : "Project saved!");
+  await loadProjects();
+};
+
+function editProject(project){
+  editingProject = project;
+
+  $("projectTitle").value = project.title || "";
+  $("projectSlug").value = project.slug || "";
+  $("projectDescription").value = project.description || "";
+  $("projectCover").value = project.cover_image || "";
+
+  $("saveProjectBtn").textContent = "Save project changes";
+  $("cancelProjectBtn").classList.remove("hidden");
+
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function resetProjectEditor(){
+  editingProject = null;
 
   $("projectTitle").value = "";
   $("projectSlug").value = "";
   $("projectDescription").value = "";
   $("projectCover").value = "";
 
-  status("Project created!");
-  await loadProjects();
-};
+  $("saveProjectBtn").textContent = "Create project";
+  $("cancelProjectBtn").classList.add("hidden");
+}
 
-$("loginBtn").onclick = async ()=>{
+$("cancelProjectBtn").onclick = resetProjectEditor;
+
+async function deleteProject(id){
+  if(!confirm("Delete this project? Its posts will remain, but will become unassigned.")){
+    return;
+  }
+
+  const {error} = await db.from("projects")
+    .delete()
+    .eq("id",id);
+
+  if(error){
+    status("Delete error: " + error.message);
+    return;
+  }
+
+  status("Project deleted.");
+  await loadProjects();
+  await loadPosts();
+}
+
+// LOAD POSTS
+async function loadPosts(){
+  const {data,error} = await db.from("posts")
+    .select("*")
+    .order("created_at",{ascending:false});
+
+  if(error){
+    status("Posts error: " + error.message);
+    return;
+  }
+
+  $("posts").innerHTML = "";
+
+  (data || []).forEach(post => {
+    const item = document.createElement("div");
+    item.className = "card";
+
+    const title = document.createElement("strong");
+    title.textContent = post.title;
+
+    const meta = document.createElement("p");
+    meta.textContent = post.published ? "Published" : "Draft";
+
+    const project = document.createElement("small");
+    const linkedProject = post.project_id
+      ? dataProjectName(post.project_id)
+      : "General post";
+
+    project.textContent = "Project: " + linkedProject;
+
+    const edit = document.createElement("button");
+    edit.className = "secondary";
+    edit.textContent = "Edit";
+    edit.onclick = () => editPost(post);
+
+    const del = document.createElement("button");
+    del.className = "danger";
+    del.textContent = "Delete";
+    del.onclick = () => deletePost(post.id);
+
+    item.append(title,meta,project,edit,del);
+    $("posts").appendChild(item);
+  });
+}
+
+function dataProjectName(id){
+  const option = Array.from($("postProject").options)
+    .find(option => option.value === id);
+
+  return option ? option.textContent : "Unassigned";
+}
+
+// EDIT POST
+function editPost(post){
+  editingPost = post;
+
+  $("postProject").value = post.project_id || "";
+  $("title").value = post.title || "";
+  $("category").value = post.category || "";
+  $("cover").value = post.cover_image || "";
+  $("content").value = post.content || "";
+
+  $("cancelEdit").classList.remove("hidden");
+
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function resetEditor(){
+  editingPost = null;
+
+  $("title").value = "";
+  $("category").value = "";
+  $("cover").value = "";
+  $("content").value = "";
+  $("postProject").value = "";
+
+  $("cancelEdit").classList.add("hidden");
+}
+
+// SAVE POST
+async function savePost(published){
+  if(!currentUser){
+    status("Please sign in first.");
+    return;
+  }
+
+  const title = $("title").value.trim();
+  const content = $("content").value.trim();
+
+  if(!title || !content){
+    status("Enter a title and content.");
+    return;
+  }
+
+  const postData = {
+    title,
+    project_id: $("postProject").value || null,
+    slug: slugify(title) + (
+      editingPost
+        ? "-" + editingPost.id.slice(0,8)
+        : "-" + Date.now().toString().slice(-6)
+    ),
+    category: $("category").value.trim() || "Projects",
+    cover_image: $("cover").value.trim() || null,
+    exerpt: content.slice(0,180),
+    content,
+    published,
+    owner_id: currentUser.id,
+    updated_at: new Date().toISOString()
+  };
+
+  status("Saving...");
+
+  let result;
+
+  if(editingPost){
+    result = await db.from("posts")
+      .update(postData)
+      .eq("id",editingPost.id);
+  }else{
+    result = await db.from("posts")
+      .insert(postData);
+  }
+
+  if(result.error){
+    status("Post error: " + result.error.message);
+    return;
+  }
+
+  status(published ? "Post published!" : "Draft saved!");
+
+  resetEditor();
+  await loadPosts();
+}
+
+async function deletePost(id){
+  if(!confirm("Delete this post permanently?")){
+    return;
+  }
+
+  const {error} = await db.from("posts")
+    .delete()
+    .eq("id",id);
+
+  if(error){
+    status(error.message);
+    return;
+  }
+
+  status("Post deleted.");
+  await loadPosts();
+}
+
+// LOGIN
+$("loginBtn").onclick = async () => {
   status("Signing in...");
+
   const {data,error} = await db.auth.signInWithPassword({
     email:$("email").value.trim(),
     password:$("password").value
   });
-  if(error){status("Login failed: " + error.message);return;}
+
+  if(error){
+    status("Login failed: " + error.message);
+    return;
+  }
+
   await showDashboard(data.user);
 };
 
-$("draftBtn").onclick = ()=>savePost(false);
-$("publishBtn").onclick = ()=>savePost(true);
+// BUTTONS
+$("draftBtn").onclick = () => savePost(false);
+$("publishBtn").onclick = () => savePost(true);
 $("cancelEdit").onclick = resetEditor;
 
-$("logoutBtn").onclick = async ()=>{
+$("logoutBtn").onclick = async () => {
   await db.auth.signOut();
+
   currentUser = null;
+
   $("dashboard").classList.add("hidden");
   $("login").classList.remove("hidden");
+
   status("Signed out.");
 };
 
-db.auth.getSession().then(({data})=>{
-  if(data.session)showDashboard(data.session.user);
+// RESTORE SESSION
+db.auth.getSession().then(({data}) => {
+  if(data.session){
+    showDashboard(data.session.user);
+  }
 });
 
-db.auth.onAuthStateChange((event,session)=>{
-  if(event === "SIGNED_IN" && session)showDashboard(session.user);
+db.auth.onAuthStateChange((event,session) => {
+  if(event === "SIGNED_IN" && session){
+    showDashboard(session.user);
+  }
 });
 </script>
 </body>
