@@ -1,0 +1,18 @@
+
+# Private admin page
+admin.html
+
+# Local secrets / environment files
+.env
+.env.*
+!.env.example
+
+# Private credentials and keys
+secrets/
+*.pem
+*.key
+
+# Editor / OS clutter
+.DS_Store
+Thumbs.db
+.vscode/
